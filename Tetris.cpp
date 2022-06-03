@@ -56,7 +56,7 @@ public:
 	std::vector<std::vector<int>> rotate()
 	{
 		std::vector<std::vector<int>> rotatedCoordinates = coordinates;
-		
+
 		// Subtract the center point from each coordinate
 		for (int i = 0; i < coordinates.size(); i++)
 		{
@@ -70,26 +70,26 @@ public:
 			// (x, y) = (y, -x)
 			rotatedCoordinates[i] = { rotatedCoordinates[i][1],-rotatedCoordinates[i][0] };
 		}
-		
+
 		// Add the center point back to each coordinate
 		for (int i = 0; i < coordinates.size(); i++)
 		{
 			rotatedCoordinates[i][0] += centerPoint[0];
 			rotatedCoordinates[i][1] += centerPoint[1];
 		}
-		
+
 		return rotatedCoordinates;
 	}
 
 	std::vector<std::vector<int>> moveSideways(int jump)
 	{
 		std::vector<std::vector<int>> newCoords = { };
-		
+
 		for (auto coord : coordinates)
 		{
 			newCoords.push_back({ coord[0] + jump, coord[1] });
 		}
-		
+
 		return newCoords;
 	}
 };
@@ -229,13 +229,13 @@ class Game
 					break;
 				}
 			}
-			
+
 			if (lineClear)
 			{
 				return y;
 			}
 		}
-		
+
 		return -1;
 	}
 
@@ -256,7 +256,7 @@ class Game
 	void rotateBlock()
 	{
 		auto rotatedCoordinates = blocks[blocks.size() - 1].rotate();
-		
+
 		if (validMove(blocks[blocks.size() - 1].coordinates, rotatedCoordinates))
 		{
 			blocks[blocks.size() - 1].coordinates = rotatedCoordinates;
@@ -266,7 +266,7 @@ class Game
 	void moveHorizontal(int jump)
 	{
 		auto sidewaysCoords = blocks[blocks.size() - 1].moveSideways(jump);
-		
+
 		if (validMove(blocks[blocks.size() - 1].coordinates, sidewaysCoords))
 		{
 			blocks[blocks.size() - 1].coordinates = sidewaysCoords;
@@ -280,7 +280,7 @@ class Game
 		{
 			return;
 		}
-		
+
 		switch (_getch())
 		{
 		case 'w':
@@ -294,10 +294,21 @@ class Game
 		case 's':
 			fallAllBlocks();
 			break;
-			
+
 		case 'd':
 			moveHorizontal(1);
 			break;
+		}
+	}
+
+	void clearEmptyBlocks()
+	{
+		for (int i = blocks.size() - 1; i >= 0; i--)
+		{
+			if (blocks[i].coordinates.empty())
+			{
+				blocks.erase(blocks.begin() + i);
+			}
 		}
 	}
 
@@ -305,33 +316,33 @@ public:
 	void runGame()
 	{
 		int frameNumber = 0;
-		
+
 		while (true)
 		{
 			for (int i = 0; i < HEIGHT * MOVE_UPDATE; i++)
-			{	
+			{
 				frameNumber += 1;
 				getInput();
-				
+
 				if (frameNumber == MOVE_UPDATE)
 				{
 					if (!validMove(blocks[blocks.size() - 1].coordinates, blocks[blocks.size() - 1].fall()))
 					{
 						blocks.push_back(Block{});
 					}
-					
+
 					int lineClear = detectLineClear();
 
 					if (lineClear != -1)
 					{
 						clearLine(lineClear);
 					}
-					
+
 					fallAllBlocks();
 
 					frameNumber = 0;
 				}
-				
+
 				draw();
 				Sleep(WAIT);
 			}
