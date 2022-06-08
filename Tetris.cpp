@@ -165,7 +165,7 @@ class Game
 	}
 
 	bool validMove(std::vector<std::vector<int>> originalCoords, std::vector<std::vector<int>> newCoords)
-	{
+	{	
 		for (auto newCoord : newCoords)
 		{
 			// Check horizontal and vertical movement
@@ -312,6 +312,19 @@ class Game
 		}
 	}
 
+	bool loseCheck()
+	{
+		for (auto coordinate : blocks[blocks.size() - 1].coordinates)
+		{
+			if (blockAtCoordinates(coordinate[0], coordinate[1]) != blocks[blocks.size() - 1].coordinates)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 public:
 	void runGame()
 	{
@@ -329,6 +342,10 @@ public:
 					if (!validMove(blocks[blocks.size() - 1].coordinates, blocks[blocks.size() - 1].fall()))
 					{
 						blocks.push_back(Block{});
+						if (loseCheck())
+						{
+							return;
+						}
 					}
 
 					int lineClear = detectLineClear();
@@ -355,6 +372,20 @@ int main()
 {
 	srand(time(0));
 
-	Game game;
-	game.runGame();
+	while (true)
+	{
+		Game game;
+		game.runGame();
+
+		std::cout << "Play again? (y/n) ";
+		char answer;
+		std::cin >> answer;
+
+		if (answer == 'n')
+		{
+			return 0;
+		}
+
+		system("cls");
+	}
 }
